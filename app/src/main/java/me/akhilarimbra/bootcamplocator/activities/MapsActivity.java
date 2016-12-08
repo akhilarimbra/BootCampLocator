@@ -13,7 +13,8 @@ public class MapsActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
-        MainFragment mainFragment = (MainFragment) getSupportFragmentManager().findFragmentById(R.id.container_main);
+        MainFragment mainFragment = (MainFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.container_main);
 
         if (mainFragment == null) {
             mainFragment = MainFragment.newInstance();
@@ -21,7 +22,6 @@ public class MapsActivity extends FragmentActivity {
                     .beginTransaction()
                     .add(R.id.container_main, mainFragment)
                     .commit();
-
         }
     }
 
