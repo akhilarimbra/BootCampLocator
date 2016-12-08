@@ -21,7 +21,7 @@ import me.akhilarimbra.bootcamplocator.R;
  * Use the {@link MainFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MainFragment extends Fragment, implements OnMapReadyCallback {
+public class MainFragment extends Fragment implements OnMapReadyCallback {
 
     private GoogleMap mMap;
 
@@ -29,7 +29,7 @@ public class MainFragment extends Fragment, implements OnMapReadyCallback {
         // Required empty public constructor
     }
 
-    public static MainFragment newInstance(String param1, String param2) {
+    public static MainFragment newInstance() {
         MainFragment fragment = new MainFragment();
         return fragment;
     }
@@ -45,7 +45,7 @@ public class MainFragment extends Fragment, implements OnMapReadyCallback {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getActivity().getSupportFragmentManager()
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
