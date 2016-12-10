@@ -13,10 +13,15 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
+
 import me.akhilarimbra.bootcamplocator.R;
+import me.akhilarimbra.bootcamplocator.model.Devslopes;
+import me.akhilarimbra.bootcamplocator.services.DataService;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -68,6 +73,7 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        updateMapForZipCode(92284);
     }
 
     public void setUserMarkers(LatLng latLng) {
@@ -77,6 +83,21 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
             Log.v("Test Log", "New Latitude : " + latLng.latitude + ", New Longitude : " + latLng.longitude);
         }
 
+        updateMapForZipCode(92284);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+    }
+
+    public void updateMapForZipCode(int zipCode) {
+        ArrayList<Devslopes> locations = DataService.getInstance().getBootCampLocationsWithInTenMilesOfZip(zipCode);
+
+        for (int i = 0; i < locations.size(); i++) {
+            Devslopes loc = locations.get(i);
+            MarkerOptions markerOptions = new MarkerOptions()
+                    .position(new LatLng(loc.getLatitude(), loc.getLongitude()));
+            markerOptions.title(loc.getLocationTitle());
+            markerOptions.snippet(loc.getLocationAddress());
+            markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.map_pin));
+            mMap.addMarker(markerOptions);
+        }
     }
 }
