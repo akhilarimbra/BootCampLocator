@@ -1,14 +1,22 @@
 package me.akhilarimbra.bootcamplocator.fragments;
 
 
+import android.content.Context;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 
+import com.google.android.gms.identity.intents.Address;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -17,7 +25,10 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 import me.akhilarimbra.bootcamplocator.R;
 import me.akhilarimbra.bootcamplocator.model.Devslopes;
@@ -57,6 +68,39 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        final EditText zipCodeEditText = (EditText) view.findViewById(R.id.zip_code_edit_text);
+        zipCodeEditText.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+
+                if ((event.getAction() == KeyEvent.ACTION_DOWN) && keyCode == KeyEvent.KEYCODE_ENTER) {
+                    // Validation is not done
+                    String text = zipCodeEditText.getText().toString();
+                    int zip = Integer.parseInt(text);
+                    InputMethodManager inputMethodManager = (InputMethodManager)
+                            getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    inputMethodManager.hideSoftInputFromWindow(zipCodeEditText.getWindowToken(), 0);
+
+                    updateMapForZipCode(zip);
+                    return true;
+                }
+
+                return false;
+            }
+        });
+
+        final ImageButton zipCodeSearchButton = (ImageButton) view.findViewById(R.id.zip_code_search_button);
+
+        zipCodeSearchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String text = zipCodeEditText.getText().toString();
+                int zip = Integer.parseInt(text);
+                updateMapForZipCode(zip);
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(32.776664f, -96.796988f), 15));
+            }
+        });
+
         // Inflate the layout for this fragment
         return view;
     }
@@ -83,6 +127,15 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
             Log.v("Test Log", "New Latitude : " + latLng.latitude + ", New Longitude : " + latLng.longitude);
         }
 
+        try {
+            Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
+            List<android.location.Address> addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
+            int zip = Integer.parseInt(addresses.get(0).getPostalCode());
+            updateMapForZipCode(zip);
+        } catch (IOException exception) {
+
+        }
+
         updateMapForZipCode(92284);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
     }
@@ -92,8 +145,7 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
 
         for (int i = 0; i < locations.size(); i++) {
             Devslopes loc = locations.get(i);
-            MarkerOptions markerOptions = new MarkerOptions()
-                    .position(new LatLng(loc.getLatitude(), loc.getLongitude()));
+            MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(loc.getLatitude(), loc.getLongitude()));
             markerOptions.title(loc.getLocationTitle());
             markerOptions.snippet(loc.getLocationAddress());
             markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.map_pin));

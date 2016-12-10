@@ -23,26 +23,20 @@
                 android:layout_marginRight="10dp">
 
                 <ImageButton
+                    android:id="@+id/zip_code_search_button"
                     android:layout_height="40dp"
                     android:layout_width="40dp"
                     android:src="@drawable/search"
                     android:background="#00000000"/>
 
                 <EditText
-                    android:gravity="center"
-                    android:layout_gravity="center"
-                    android:layout_width="220dp"
+                    android:id="@+id/zip_code_edit_text"
+                    android:layout_width="match_parent"
                     android:layout_height="40dp"
                     android:layout_marginLeft="5dp"
                     android:hint="@string/search_hint"
                     android:inputType="number"/>
 
-                <ImageButton
-                    android:gravity="left"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@drawable/mic"
-                    android:background="#00000000"/>
 
             </LinearLayout>
 
