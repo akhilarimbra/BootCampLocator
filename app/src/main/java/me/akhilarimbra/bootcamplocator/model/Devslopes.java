@@ -5,6 +5,13 @@ package me.akhilarimbra.bootcamplocator.model;
  */
 
 public class Devslopes {
+
+    final String DRAWABLE = "drawable/";
+
+    public String getImageUrl() {
+        return DRAWABLE + getLocationImageUrl();
+    }
+
     public float getLongitude() {
         return longitude;
     }

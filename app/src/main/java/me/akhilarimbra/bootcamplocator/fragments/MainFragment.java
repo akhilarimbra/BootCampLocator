@@ -43,6 +43,7 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private MarkerOptions userMarker;
+    private LocationsListFragment listFragment;
 
     public MainFragment() {
         // Required empty public constructor
@@ -68,6 +69,19 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        listFragment = (LocationsListFragment) getActivity()
+                        .getSupportFragmentManager()
+                        .findFragmentById(R.id.container_location_list);
+
+
+        if (listFragment == null) {
+            listFragment = LocationsListFragment.newInstance();
+            getActivity()
+                    .getSupportFragmentManager()
+                    .beginTransaction().add(R.id.container_location_list, listFragment)
+                    .commit();
+        }
+
         final EditText zipCodeEditText = (EditText) view.findViewById(R.id.zip_code_edit_text);
         zipCodeEditText.setOnKeyListener(new View.OnKeyListener() {
             @Override
@@ -81,6 +95,7 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
                             getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                     inputMethodManager.hideSoftInputFromWindow(zipCodeEditText.getWindowToken(), 0);
 
+                    showList();
                     updateMapForZipCode(zip);
                     return true;
                 }
@@ -101,6 +116,7 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
             }
         });
 
+        hideList();
         // Inflate the layout for this fragment
         return view;
     }
@@ -148,8 +164,17 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
             MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(loc.getLatitude(), loc.getLongitude()));
             markerOptions.title(loc.getLocationTitle());
             markerOptions.snippet(loc.getLocationAddress());
-            markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.map_pin));
+            markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.pin));
             mMap.addMarker(markerOptions);
         }
     }
+
+    private void hideList() {
+        getActivity().getSupportFragmentManager().beginTransaction().hide(listFragment).commit();
+    }
+
+    private void showList() {
+        getActivity().getSupportFragmentManager().beginTransaction().show(listFragment).commit();
+    }
+
 }
